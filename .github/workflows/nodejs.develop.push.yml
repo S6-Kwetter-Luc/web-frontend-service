@@ -41,7 +41,7 @@ jobs:
         with:
           name: dockerfile-artifact
           path: ./Dockerfile
-  deliver:
+  delivery:
     needs: build
     runs-on: ubuntu-18.04
     steps:
