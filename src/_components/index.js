@@ -1,4 +1,4 @@
 export * from './PrivateRoute';
 export * from './NavBar/NavBar'
-export * from './auth/Register'
-export * from './auth/Login'
+export * from '../excluded/auth/Register'
+export * from '../excluded/auth/Login'

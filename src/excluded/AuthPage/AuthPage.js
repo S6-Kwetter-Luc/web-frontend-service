@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import Particles from "react-particles-js";
-import {particlesConfig} from "../particlesJsConfig";
+import {particlesConfig} from "../../particlesJsConfig";
 import {connect} from "react-redux";
-import {userActions} from "../_actions";
-import {LoginComponent, RegisterComponent} from "../_components/auth";
+import {userActions} from "../../_actions";
+import {LoginComponent, RegisterComponent} from "../auth";
 
 export class AuthPage extends Component {
 

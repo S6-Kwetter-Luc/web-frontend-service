@@ -6,9 +6,6 @@ import {userActions} from '../../_actions';
 
 import Particles from "react-particles-js";
 import {particlesConfig} from "../../particlesJsConfig";
-
-import './Register.css'
-
 class RegisterComponent extends React.Component {
     constructor(props) {
         super(props);

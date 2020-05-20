@@ -8,8 +8,9 @@ import {NavBar, PrivateRoute} from '../_components';
 import {HomePage} from '../HomePage';
 import {LoginPage} from '../LoginPage';
 import {RegisterPage} from '../RegisterPage';
-import {AuthPage} from "../AuthPage";
-import {ProfilePage} from '../ProfilePage';
+import {ProfilePage} from '../ProfilePage'
+
+import '../globalStylesheet.css'
 
 
 class App extends React.Component {
@@ -34,10 +35,10 @@ class App extends React.Component {
 
                         <Switch>
 
-                            {/*<PrivateRoute exact path="/profile" component={ProfilePage}/>*/}
+                            <PrivateRoute exact path="/profile/:id" component={ProfilePage}/>
                             <Route path="/login" component={LoginPage}/>
                             <Route path="/register" component={RegisterPage}/>
-                            <Route path="/auth" component={AuthPage}/>
+                            {/*<Route path="/auth" component={AuthPage}/>*/}
                             <Route path="/" exact component={HomePage}/>
                             <Redirect from="*" to="/"/>
                         </Switch>
