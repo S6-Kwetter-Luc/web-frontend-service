@@ -41,15 +41,21 @@ class NavBar extends Component {
                                         </li>
                                     </ul>
                                 </>
-                                : <ul className="nav navbar-nav navbar-right">
-                                    <li style={{marginRight: "20px"}}>
-                                        <Link className="btn btn-outline-secondary my-2 my-sm-0" to="/login">Login</Link>
-                                    </li>
-                                    <li>
-                                        <Link className="btn btn-outline-secondary my-2 my-sm-0" to="/register">Sign
-                                            up!</Link>
-                                    </li>
-                                </ul>
+                                : <>
+                                    <ul className="navbar-nav mr-auto">
+
+                                    </ul>
+                                    <ul className="nav navbar-nav navbar-right">
+                                        <li style={{marginRight: "20px"}}>
+                                            <Link className="btn btn-outline-secondary my-2 my-sm-0"
+                                                  to="/login">Login</Link>
+                                        </li>
+                                        <li>
+                                            <Link className="btn btn-outline-secondary my-2 my-sm-0" to="/register">Sign
+                                                up!</Link>
+                                        </li>
+                                    </ul>
+                                </>
                         }
                     </div>
                 </div>

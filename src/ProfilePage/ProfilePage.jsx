@@ -1,13 +1,11 @@
 import React from 'react';
 import {connect} from "react-redux";
 import config from '../config.json'
-import { authHeader } from '../_helpers';
-
 
 
 class ProfilePage extends React.Component {
 
-     async componentDidMount() {
+    async componentDidMount() {
         console.log('I DID MOUNT')
         //
         if (this.props.match.params.id == null) {
@@ -20,20 +18,24 @@ class ProfilePage extends React.Component {
         // fetch(`${config.apiUrl}/users/${this.props.match.params.id}`, requestOptions).then(r => console.log(r))
         // fetch(`${config.apiUrl}/users/${authentication.user.id}`, requestOptions).then(r => console.log('response: ', r))
 
-         const requestOptions = {
-             method: 'GET',
-             // mode: "cors",
-             // cache: "default"
-             // headers: authHeader()
-         }
-         console.log('dit werkt')
-         let response = await fetch(`${config.apiUrl}/users/${this.props.match.params.id}`, requestOptions)
-         let body = await response.text()
-         // this.setState(user: JSON.parse(body));
+        const requestOptions = {
+            method: 'GET',
+            // mode: "cors",
+            // cache: "default"
+            // headers: authHeader()
+        }
+        console.log('dit werkt')
+        let response = await fetch(`${config.apiUrl}/users/${this.props.match.params.id}`, requestOptions)
+        let body = await response.text()
+        // this.setState(user: JSON.parse(body));
 
-         this.setState((state, props) => {
-             return {user: JSON.parse(body)};
-         });
+        // if (!body.user) {
+        //     return this.context.router.history.push('/')
+        // }
+
+        this.setState((state, props) => {
+            return {user: JSON.parse(body)};
+        });
 
     }
 
@@ -58,11 +60,12 @@ class ProfilePage extends React.Component {
                             <span className="sr-only">Loading...</span>
                         </div>
                         : <div>
-                        <div className="jumbotron">
-                            <h2 className="display-4"><span className="text-muted">Welcome </span> {this.state.user.name}!</h2>
-                            <p><span className="text-muted">Username </span>{this.state.user.username}</p>
-                            <p><span className="text-muted">Email </span>{this.state.user.email}</p>
-                        </div>
+                            <div className="jumbotron">
+                                <h2 className="display-4"><span
+                                    className="text-muted">Welcome </span> {this.state.user.name}!</h2>
+                                <p><span className="text-muted">Username </span>{this.state.user.username}</p>
+                                <p><span className="text-muted">Email </span>{this.state.user.email}</p>
+                            </div>
 
                             <div className="row">
                                 <div className="col-sm-6">
