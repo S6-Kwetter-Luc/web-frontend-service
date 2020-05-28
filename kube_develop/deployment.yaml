@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web-frontend-service
-  namespace: production
   labels:
     app: web-frontend-service
 spec:
