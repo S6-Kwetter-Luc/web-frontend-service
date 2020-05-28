@@ -19,7 +19,7 @@ class HomePage extends React.Component {
                     <div className={"row h-100 justify-content-center align-items-center"}>
                         <div className={"col-12"}>
                             <h1 style={{textAlign: "center"}}>Welcome to Kwetter, a twitter clone made by <a
-                                href="https://lucurlings.nl" target="_blank">Luc Urlings</a>.</h1>
+                                href="https://lucurlings.nl" target="_blank" rel="noopener noreferrer">Luc Urlings</a>.</h1>
                             <h3 style={{textAlign: "center"}}>Get started by <Link to={{
                                 pathname: "/auth",
                                 state: {
