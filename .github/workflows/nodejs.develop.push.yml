@@ -67,10 +67,17 @@ jobs:
         with:
           name: release-artifact
           path: ./build
+
       - name: Download Dockerfile artifact
         uses: actions/download-artifact@v1
         with:
           name: dockerfile-artifact
+          path: .
+
+      - name: Download nginx config artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: nginx-artifact
           path: .
 
       # Deliver Docker image to DockerHub
