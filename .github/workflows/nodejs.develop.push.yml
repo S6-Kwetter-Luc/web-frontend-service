@@ -28,7 +28,7 @@ jobs:
 
       # Test the project
       - name: Test
-        run: npm test
+        run: npm test --passWithNoTests
         env:
           CI: false
 
