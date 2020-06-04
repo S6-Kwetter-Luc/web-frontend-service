@@ -102,8 +102,8 @@ jobs:
         with:
           namespace: kwetter-production
           manifests: |
-            ./kube_develop/deployment.yaml
-            ./kube_develop/ingress.yaml
-            ./kube_develop/service.yaml
+            ./kube/deployment.yaml
+            ./kube/ingress.yaml
+            ./kube/service.yaml
           images: |
             ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
