@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: kubernetes-artifact
-          path: ./kube_develop
+          path: ./kube
 
   delivery:
     needs: build
