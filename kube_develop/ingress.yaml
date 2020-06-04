@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: web-frontend-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: kwetter.staging.lucurlings.nl
+      http:
+        paths:
+          - backend:
+              serviceName: web-frontend-service
+              servicePort: 80
