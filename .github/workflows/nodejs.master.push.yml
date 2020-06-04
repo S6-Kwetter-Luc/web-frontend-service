@@ -87,7 +87,7 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: kubernetes-artifact
-          path: ./kube_develop
+          path: ./kube
 
       - name: Setup Kubectl
         uses: azure/setup-kubectl@v1
