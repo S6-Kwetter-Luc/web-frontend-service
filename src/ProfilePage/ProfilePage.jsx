@@ -1,7 +1,7 @@
 import React from 'react';
-import {connect} from "react-redux";
 import config from '../config.json'
 import {Link} from 'react-router-dom';
+import {connect} from 'react-redux';
 
 
 class ProfilePage extends React.Component {
@@ -201,37 +201,42 @@ class ProfilePage extends React.Component {
                                     <div className="col-sm-6">
                                         <div className="row">
                                             <div className="col-sm-6">
-                                                <h4 className="textColor">Followers</h4>
-                                                <div>
-
-                                                    {
-                                                        this.state.followers !== []
-                                                            ? <table className="table table-borderless">
-                                                                <tbody>
-                                                                {this.state.followers}
-                                                                </tbody>
-                                                            </table>
-                                                            : <div className="spinner-border" role="status">
-                                                                <span className="sr-only">Loading...</span>
+                                                {
+                                                    this.state.followers !== []
+                                                        ? <>
+                                                            <h4 className="textColor">Followers
+                                                                <span
+                                                                    className="badge badge-secondary"> {this.state.followers.length}</span>
+                                                            </h4>
+                                                            <div>
+                                                                <table className="table table-borderless">
+                                                                    <tbody>
+                                                                    {this.state.followers}
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
-                                                    }
-                                                </div>
+                                                        </>
+                                                        : <p>No followers</p>
+                                                }
                                             </div>
                                             <div className="col-sm-6">
-                                                <h4 className="textColor">Following</h4>
-                                                <div>
-                                                    {
-                                                        this.state.following !== []
-                                                            ? <table className="table table-borderless">
-                                                                <tbody>
-                                                                {this.state.following}
-                                                                </tbody>
-                                                            </table>
-                                                            : <div className="spinner-border" role="status">
-                                                                <span className="sr-only">Loading...</span>
+                                                {
+                                                    this.state.following !== []
+                                                        ? <>
+                                                            <h4 className="textColor">Following
+                                                                <span
+                                                                    className="badge badge-secondary">{this.state.following.length}</span>
+                                                            </h4>
+                                                            <div>
+                                                                <table className="table table-borderless">
+                                                                    <tbody>
+                                                                    {this.state.following}
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
-                                                    }
-                                                </div>
+                                                        </>
+                                                        : <p>Not following anyone</p>
+                                                }
                                             </div>
                                         </div>
                                     </div>
