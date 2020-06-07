@@ -26,28 +26,27 @@ class App extends React.Component {
     }
 
     render() {
-        // const {alert} = this.props;
+        const {alert} = this.props;
         return (
             <div>
                 <Router history={history}>
                     <NavBar/>
+                    {alert.message && <div className="container">
+                        <div className={`alert ${alert.type}`}>{alert.message}</div>
+                    </div>
+                    }
                     <div className="container">
-
                         <Switch>
-
                             <PrivateRoute exact path="/profile/:id" component={ProfilePage}/>
                             <Route path="/login" component={LoginPage}/>
                             <Route path="/register" component={RegisterPage}/>
-                            {/*<Route path="/auth" component={AuthPage}/>*/}
                             <Route path="/" exact component={HomePage}/>
                             <Redirect from="*" to="/"/>
                         </Switch>
                     </div>
                 </Router>
-
             </div>
-        )
-            ;
+        );
     }
 }
 
