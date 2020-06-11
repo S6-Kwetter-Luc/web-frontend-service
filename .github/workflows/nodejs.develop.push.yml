@@ -1,7 +1,7 @@
 name: Node.js push on develop branch
 
 on:
-  pull_request:
+  push:
     branches: [ develop ]
 
 jobs:
