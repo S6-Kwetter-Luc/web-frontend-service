@@ -102,6 +102,7 @@ jobs:
         with:
           namespace: kwetter-production
           manifests: |
+            ./kube/certificate.yaml
             ./kube/deployment.yaml
             ./kube/ingress.yaml
             ./kube/service.yaml

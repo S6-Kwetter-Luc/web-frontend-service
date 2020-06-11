@@ -1,7 +1,7 @@
 name: Node.js push on develop branch
 
 on:
-  push:
+  pull_request:
     branches: [ develop ]
 
 jobs:
@@ -117,6 +117,7 @@ jobs:
         with:
           namespace: kwetter-staging
           manifests: |
+            ./kube_develop/certificate.yaml
             ./kube_develop/deployment.yaml
             ./kube_develop/ingress.yaml
             ./kube_develop/service.yaml
