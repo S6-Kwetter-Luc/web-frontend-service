@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {Link} from 'react-router-dom';
 import './NavBar.css'
+import config from "../../config.json";
+import { authHeader, authHeaderAndAdditionalHeaders } from '../../_helpers';
 
 class NavBar extends Component {
 
@@ -12,11 +14,30 @@ class NavBar extends Component {
     }
 
     onKweetContentChange = (event) => {
-        console.log(event.target)
         this.setState({kweet:event.target.value})
     }
 
-    handleKweet = () => {
+    handleSubmitKweet = async () => {
+
+        if (this.state.kweet.trim() === "") return;
+
+        let {authentication} = this.props;
+
+        const requestOptions = {
+            method: 'POST',
+            // mode: "cors",
+            // cache: "default"
+            body: JSON.stringify({Content: this.state.kweet, Username: authentication.user.profile.username, UserId: authentication.user.id}),
+            headers: authHeaderAndAdditionalHeaders()
+        }
+
+        let response = await fetch(`${config.KWET_SERVICE}/kweet`, requestOptions)
+        if (response.status !== 200) {
+            throw new Error(JSON.stringify(response))
+        }
+
+        // let body = await response.json();
+
 
     }
 
@@ -87,12 +108,16 @@ class NavBar extends Component {
                                                     <div className="modal-footer">
                                                         <button type="button" className="btn btn-secondary" data-dismiss="modal">Close
                                                         </button>
-                                                        <button type="button" className="btn btn-primary">Send message</button>
+                                                        <button type="button" className="btn btn-primary" onClick={this.handleSubmitKweet} data-dismiss="modal">Send message</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                {/*End Modal*/}
+                                {/*Toast*/}
+
+                                {/*End Toast*/}
                                 </>
                                 : <>
                                     <ul className="navbar-nav mr-auto">

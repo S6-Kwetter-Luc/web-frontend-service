@@ -2,6 +2,7 @@ import React from 'react';
 import config from '../config.json'
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
+import { authHeader } from '../_helpers';
 
 
 class ProfilePage extends React.Component {
@@ -48,6 +49,8 @@ class ProfilePage extends React.Component {
 
         this.parseUsers(body.profile.followers, 'followers');
         this.parseUsers(body.profile.following, 'following');
+
+        this.loadRecentKwets()
     }
 
 
@@ -56,7 +59,7 @@ class ProfilePage extends React.Component {
 
         console.log("I DID CONSTRUCT")
 
-        this.state = {user: null, myProfile: false, follow: false, followers: [], following: []}
+        this.state = {user: null, myProfile: false, follow: false, followers: [], following: [], kweets: []}
     }
 
     //Parses lost of following or followers
@@ -73,6 +76,36 @@ class ProfilePage extends React.Component {
             };
         });
 
+    }
+
+    loadRecentKwets = async () => {
+        const requestOptions = {
+            method: 'GET',
+            // mode: "cors",
+            // cache: "default"
+            headers: authHeader()
+        }
+
+        let response = await fetch(`${config.KWET_SERVICE}/kweet/${this.props.match.params.id}`, requestOptions)
+        if (response.status !== 200) {
+            throw new Error(JSON.stringify(response))
+        }
+        let body = await response.json()
+        let html = body.map((item, key) => {
+            return <>
+                <div className="card" key={item.id} style={{marginTop: '20px'}}>
+                    <div className="card-body">
+                        <p className="card-text">{item.content}</p>
+                        <p className="card-text"><small className="text-muted">Written on {new Date(item.dateTime).toLocaleString()}</small></p>
+                    </div>
+                </div>
+            </>
+        })
+        this.setState((state, props) => {
+            return {
+                kweets: html
+            }
+        })
     }
 
     loadFollowing = async () => {
@@ -180,7 +213,14 @@ class ProfilePage extends React.Component {
 
                                 <div className="row">
                                     <div className="col-sm-6">
-                                        <h4 className="textColor">Kwets</h4>
+                                        <h4 className="textColor">Kweets</h4>
+                                        {
+                                            this.state.kweets !== []
+                                                ? <>
+                                                    {this.state.kweets}
+                                                </>
+                                                : <p>No kweets :(</p>
+                                        }
                                     </div>
                                     <div className="col-sm-6">
                                         <div className="row">
