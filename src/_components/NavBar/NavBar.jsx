@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {Link} from 'react-router-dom';
-import * as textcomplete from 'textcomplete'
 import './NavBar.css'
 
 class NavBar extends Component {
