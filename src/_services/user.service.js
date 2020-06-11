@@ -19,7 +19,7 @@ function login(Email, Password) {
         body: JSON.stringify({ Email, Password })
     };
 
-    return fetch(`${config.apiUrl}/users/authenticate`, requestOptions)
+    return fetch(`${config.ACCOUNT_SERVICE}/account/authenticate`, requestOptions)
         .then(handleResponse)
         .then(user => {
             // store user details and jwt token in local storage to keep user logged in between page refreshes
@@ -40,7 +40,7 @@ function getAll() {
         headers: authHeader()
     };
 
-    return fetch(`${config.apiUrl}/users`, requestOptions).then(handleResponse);
+    return fetch(`${config.ACCOUNT_SERVICE}/account`, requestOptions).then(handleResponse);
 }
 
 function register(user) {
@@ -50,7 +50,7 @@ function register(user) {
         body: JSON.stringify(user)
     };
 
-    return fetch(`${config.apiUrl}/users/register`, requestOptions).then(handleResponse);
+    return fetch(`${config.ACCOUNT_SERVICE}/account/register`, requestOptions).then(handleResponse);
 }
 
 function handleResponse(response) {
