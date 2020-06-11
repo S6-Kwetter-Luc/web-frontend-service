@@ -117,6 +117,7 @@ jobs:
         with:
           namespace: kwetter-staging
           manifests: |
+            ./kube_develop/certificate.yaml
             ./kube_develop/deployment.yaml
             ./kube_develop/ingress.yaml
             ./kube_develop/service.yaml
