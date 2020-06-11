@@ -4,7 +4,8 @@ import {connect} from 'react-redux';
 
 import {history} from '../_helpers';
 import {alertActions} from '../_actions';
-import {NavBar, PrivateRoute} from '../_components';
+import {NavBar} from '../NavBar'
+import {PrivateRoute} from '../_helpers'
 import {HomePage} from '../HomePage';
 import {LoginPage} from '../LoginPage';
 import {RegisterPage} from '../RegisterPage';

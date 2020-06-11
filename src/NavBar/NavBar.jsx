@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {Link} from 'react-router-dom';
 import './NavBar.css'
-import config from "../../config.json";
-import { authHeader, authHeaderAndAdditionalHeaders } from '../../_helpers';
+import config from "../config.json";
+import { authHeader, authHeaderAndAdditionalHeaders } from '../_helpers';
 
 class NavBar extends Component {
 
