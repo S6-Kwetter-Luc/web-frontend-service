@@ -2,6 +2,7 @@ import React from 'react';
 import config from '../config.json'
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
+import { authHeader } from '../_helpers';
 
 
 class ProfilePage extends React.Component {
@@ -25,9 +26,6 @@ class ProfilePage extends React.Component {
         const {authentication} = this.props;
         console.log('authentication object: ', authentication)
 
-        // fetch(`${config.apiUrl}/users/${this.props.match.params.id}`, requestOptions).then(r => console.log(r))
-        // fetch(`${config.apiUrl}/users/${authentication.user.id}`, requestOptions).then(r => console.log('response: ', r))
-
         const requestOptions = {
             method: 'GET',
             // mode: "cors",
@@ -49,8 +47,10 @@ class ProfilePage extends React.Component {
             };
         });
 
-        this.loadFollowing();
-        this.loadFollowers();
+        this.parseUsers(body.profile.followers, 'followers');
+        this.parseUsers(body.profile.following, 'following');
+
+        this.loadRecentKwets()
     }
 
 
@@ -59,7 +59,53 @@ class ProfilePage extends React.Component {
 
         console.log("I DID CONSTRUCT")
 
-        this.state = {user: null, myProfile: false, follow: false, followers: [], following: []}
+        this.state = {user: null, myProfile: false, follow: false, followers: [], following: [], kweets: []}
+    }
+
+    //Parses lost of following or followers
+    parseUsers = async (body, listName) => {
+        this.setState((state, props) => {
+            return {
+                [listName]: body.map((item, key) => {
+                    return <tr>
+                        <td><Link to={{
+                            pathname: "/profile/" + item.id
+                        }}>@{item.username}</Link></td>
+                    </tr>
+                })
+            };
+        });
+
+    }
+
+    loadRecentKwets = async () => {
+        const requestOptions = {
+            method: 'GET',
+            // mode: "cors",
+            // cache: "default"
+            headers: authHeader()
+        }
+
+        let response = await fetch(`${config.KWET_SERVICE}/kweet/${this.props.match.params.id}`, requestOptions)
+        if (response.status !== 200) {
+            throw new Error(JSON.stringify(response))
+        }
+        let body = await response.json()
+        let html = body.map((item, key) => {
+            return <>
+                <div className="card" key={item.id} style={{marginTop: '20px'}}>
+                    <div className="card-body">
+                        <p className="card-text">{item.content}</p>
+                        <p className="card-text"><small className="text-muted">Written on {new Date(item.dateTime).toLocaleString()}</small></p>
+                    </div>
+                </div>
+            </>
+        })
+        this.setState((state, props) => {
+            return {
+                kweets: html
+            }
+        })
     }
 
     loadFollowing = async () => {
@@ -72,19 +118,7 @@ class ProfilePage extends React.Component {
         let response = await fetch(`${config.ACCOUNT_SERVICE}/profile/getfollowing/${this.props.match.params.id}`, requestOptions)
         let body = await response.json()
 
-
-        this.setState((state, props) => {
-            return {
-                following: body.map((item, key) => {
-                    return <tr>
-                        <td><Link to={{
-                            pathname: "/profile/" + item.id
-                        }}>{item.username}</Link></td>
-                    </tr>
-                })
-            };
-        });
-
+        this.parseUsers(body, 'following')
     }
 
     loadFollowers = async () => {
@@ -97,21 +131,8 @@ class ProfilePage extends React.Component {
         let response = await fetch(`${config.ACCOUNT_SERVICE}/profile/getfollowers/${this.props.match.params.id}`, requestOptions)
         let body = await response.json()
 
-        console.log(body)
-        this.setState((state, props) => {
-            return {
-                followers: body.map((item, key) => {
-                    return <tr>
-                        <td><Link to={{
-                            pathname: "/profile/" + item.id
-                        }}>{item.username}</Link></td>
-                    </tr>
-                })
-            };
-        });
-
+        this.parseUsers(body, 'followers')
     }
-
 
     follow = async () => {
         const {authentication} = this.props;
@@ -151,13 +172,10 @@ class ProfilePage extends React.Component {
         this.loadFollowers()
     }
 
-
     render() {
 
         return (
             <div>
-                {/*<div>{authentication.user.name}</div>*/}
-
                 {
                     (this.state.user === null)
                         ? <div className="spinner-border" role="status">
@@ -166,37 +184,43 @@ class ProfilePage extends React.Component {
                         : <div>
                             {
                                 this.state.myProfile
-                                    ? <>
+                                    ? <div className="float-right" style={{margin: '10px'}}>
                                         <button type="button" className="btn btn-primary">Edit your profile</button>
-                                    </>
+                                    </div>
                                     : <>
                                         {
                                             this.state.follow
-                                                ? <>
+                                                ? <div className="float-right" style={{margin: '10px'}}>
                                                     <button type="button" className="btn btn-danger"
                                                             onClick={this.unfollow}>Unfollow this user
                                                     </button>
-                                                </>
-                                                : <>
+                                                </div>
+                                                : <div className="float-right" style={{margin: '10px'}}>
                                                     <button type="button" className="btn btn-primary" onClick={this.follow}>Follow
                                                         this user
                                                     </button>
-                                                </>
+                                                </div>
                                         }
                                     </>
-
                             }
                             <div>
                                 <div className="jumbotron">
                                     <h2 className="display-4"><span
                                         className="text-muted">Welcome </span> {this.state.user.name}!</h2>
-                                    <p><span className="text-muted">Username </span>{this.state.user.username}</p>
+                                    <p><span className="text-muted">Username </span>@{this.state.user.profile.username}</p>
                                     <p><span className="text-muted">Email </span>{this.state.user.email}</p>
                                 </div>
 
                                 <div className="row">
                                     <div className="col-sm-6">
-                                        <h4 className="textColor">Kwets</h4>
+                                        <h4 className="textColor">Kweets</h4>
+                                        {
+                                            this.state.kweets !== []
+                                                ? <>
+                                                    {this.state.kweets}
+                                                </>
+                                                : <p>No kweets :(</p>
+                                        }
                                     </div>
                                     <div className="col-sm-6">
                                         <div className="row">
