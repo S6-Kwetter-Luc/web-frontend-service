@@ -8,6 +8,9 @@ import { Provider } from 'react-redux';
 
 import { store } from './_helpers';
 import { App } from './App';
+import * as Sentry from '@sentry/browser';
+
+Sentry.init({dsn: "https://caa098d0e4e8464ea596e713115aacbe@o406139.ingest.sentry.io/5273037"});
 
 render(
     <Provider store={store}>
