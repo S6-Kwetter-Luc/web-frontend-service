@@ -112,6 +112,7 @@ jobs:
         with:
           namespace: kwetter-production
           manifests: |
+            ./kube/autoscaler.yaml
             ./kube/certificate.yaml
             ./kube/deployment.yaml
             ./kube/ingress.yaml
