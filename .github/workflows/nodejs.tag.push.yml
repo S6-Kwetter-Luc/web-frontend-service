@@ -158,7 +158,7 @@ jobs:
           path: /tmp/lighthouse-report
 
   k6_cloud_test:
-    needs: deployment
+    needs: lighthouse-check
     name: k6 cloud test run
     runs-on: ubuntu-18.04
     steps:
