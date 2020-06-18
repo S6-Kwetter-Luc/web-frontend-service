@@ -1,14 +1,13 @@
-name: Node.js on push on master
+name: Node.js on push on tag
 
 on:
   push:
-    branches: [ master ]
+    tags:
+      - '**'
 
 jobs:
-  build:
+  sonarcloud-scan:
     runs-on: ubuntu-18.04
-    container:
-      image: node:12.16.2
     steps:
       - uses: actions/checkout@v2
         with:
@@ -21,6 +20,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  build:
+    runs-on: ubuntu-18.04
+    container:
+      image: node:12.16.2
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Decrypt the GPG encrypted config files
         run: gpg --quiet --batch --yes --passphrase ${{ secrets.GPG_PASSPHRASE }} --output ./src/config.json --decrypt ./src/config.production.json.gpg
@@ -58,7 +66,7 @@ jobs:
           path: ./kube
 
   delivery:
-    needs: build
+    needs: [sonarcloud-scan, build]
     runs-on: ubuntu-18.04
     steps:
       - name: Download release artifact
@@ -79,9 +87,13 @@ jobs:
           name: nginx-artifact
           path: .
 
+      - name: Get tag version
+        id: get_tag_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+
       - name: Deliver Docker image
         env:
-          CONTAINER_IMAGE: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
+          CONTAINER_IMAGE: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ steps.get_tag_version.outputs.VERSION }}
           CONTAINER_IMAGE_LATEST: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:latest
         run: |
           docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
@@ -98,6 +110,10 @@ jobs:
         with:
           name: kubernetes-artifact
           path: ./kube
+
+      - name: Get tag version
+        id: get_tag_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
       - name: Setup Kubectl
         uses: azure/setup-kubectl@v1
@@ -118,7 +134,7 @@ jobs:
             ./kube/ingress.yaml
             ./kube/service.yaml
           images: |
-            ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
+            ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ steps.get_tag_version.outputs.VERSION }}
 
   lighthouse-check:
     needs: deployment
