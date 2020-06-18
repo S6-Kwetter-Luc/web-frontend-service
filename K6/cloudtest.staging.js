@@ -16,6 +16,6 @@ export const options = {
 };
 
 export default function () {
-    const res = http.get('https://kwetter.lucurlings.nl');
+    const res = http.get('https://kwetter.staging.lucurlings.nl');
     sleep(1);
 }
