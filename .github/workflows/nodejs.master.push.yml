@@ -89,7 +89,7 @@ jobs:
           docker push $CONTAINER_IMAGE
           docker push $CONTAINER_IMAGE_LATEST
 
-  deploy:
+  deployment:
     needs: delivery
     runs-on: ubuntu-18.04
     steps:
@@ -119,3 +119,24 @@ jobs:
             ./kube/service.yaml
           images: |
             ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
+
+  lighthouse-check:
+    needs: deployment
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Create /tmp/lighthouse-report directory
+        run: mkdir /tmp/lighthouse-report
+
+      - name: Run Lighthouse check
+        uses: foo-software/lighthouse-check-action@master
+        env:
+          WEBSITE_URL: https://kwetter.lucurlings.nl
+        with:
+          outputDirectory: /tmp/lighthouse-report
+          urls: ${{ env.WEBSITE_URL }}
+
+      - name: Upload Lighthouse report artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: lighthouse-report-artifact
+          path: /tmp/lighthouse-report
