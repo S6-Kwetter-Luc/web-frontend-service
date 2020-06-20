@@ -69,6 +69,9 @@ class NavBar extends Component {
                                     </ul>
                                     <ul className="nav navbar-nav navbar-right">
                                         <li className="nav-item" style={{marginRight: "20px"}}>
+                                            <Link className="btn btn-outline-light my-2 my-sm-0" to="/release-notes">Release Notes</Link>
+                                        </li>
+                                        <li className="nav-item" style={{marginRight: "20px"}}>
                                             <button type="button" className="btn btn-outline-success my-2 my-sm-0" data-toggle="modal"
                                                     data-target="#exampleModal">Write a kweet
                                             </button>
@@ -124,6 +127,9 @@ class NavBar extends Component {
 
                                     </ul>
                                     <ul className="nav navbar-nav navbar-right">
+                                        <li className="nav-item" style={{marginRight: "20px"}}>
+                                            <Link className="btn btn-outline-light my-2 my-sm-0" to="/release-notes">Release Notes</Link>
+                                        </li>
                                         <li style={{marginRight: "20px"}}>
                                             <Link className="btn btn-outline-light my-2 my-sm-0"
                                                   to="/login">Login</Link>
