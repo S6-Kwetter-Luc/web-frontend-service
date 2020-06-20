@@ -1,16 +1,34 @@
-name: Node.js on push on master
+name: Node.js on push on tag
 
 on:
   push:
-    branches: [ master ]
+    tags:
+      - '**'
 
 jobs:
+  sonarcloud-scan:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: .
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   build:
     runs-on: ubuntu-18.04
     container:
       image: node:12.16.2
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Decrypt the GPG encrypted config files
         run: gpg --quiet --batch --yes --passphrase ${{ secrets.GPG_PASSPHRASE }} --output ./src/config.json --decrypt ./src/config.production.json.gpg
@@ -48,7 +66,7 @@ jobs:
           path: ./kube
 
   delivery:
-    needs: build
+    needs: [sonarcloud-scan, build]
     runs-on: ubuntu-18.04
     steps:
       - name: Download release artifact
@@ -69,9 +87,13 @@ jobs:
           name: nginx-artifact
           path: .
 
+      - name: Get tag version
+        id: get_tag_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+
       - name: Deliver Docker image
         env:
-          CONTAINER_IMAGE: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
+          CONTAINER_IMAGE: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ steps.get_tag_version.outputs.VERSION }}
           CONTAINER_IMAGE_LATEST: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:latest
         run: |
           docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
@@ -79,7 +101,7 @@ jobs:
           docker push $CONTAINER_IMAGE
           docker push $CONTAINER_IMAGE_LATEST
 
-  deploy:
+  deployment:
     needs: delivery
     runs-on: ubuntu-18.04
     steps:
@@ -88,6 +110,10 @@ jobs:
         with:
           name: kubernetes-artifact
           path: ./kube
+
+      - name: Get tag version
+        id: get_tag_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
       - name: Setup Kubectl
         uses: azure/setup-kubectl@v1
@@ -102,8 +128,46 @@ jobs:
         with:
           namespace: kwetter-production
           manifests: |
+            ./kube/autoscaler.yaml
+            ./kube/certificate.yaml
             ./kube/deployment.yaml
             ./kube/ingress.yaml
             ./kube/service.yaml
           images: |
-            ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
+            ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ steps.get_tag_version.outputs.VERSION }}
+
+  lighthouse-check:
+    needs: deployment
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Create /tmp/lighthouse-report directory
+        run: mkdir /tmp/lighthouse-report
+
+      - name: Run Lighthouse check
+        uses: foo-software/lighthouse-check-action@master
+        env:
+          WEBSITE_URL: https://kwetter.lucurlings.nl
+        with:
+          outputDirectory: /tmp/lighthouse-report
+          urls: ${{ env.WEBSITE_URL }}
+
+      - name: Upload Lighthouse report artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: lighthouse-report-artifact
+          path: /tmp/lighthouse-report
+
+  k6_cloud_test:
+    needs: lighthouse-check
+    name: k6 cloud test run
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Run k6 cloud test
+        uses: k6io/action@v0.1
+        with:
+          filename: ./K6/cloudtest.production.js
+          cloud: true
+          token: ${{ secrets.K6_API_TOKEN }}

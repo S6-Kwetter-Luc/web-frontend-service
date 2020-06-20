@@ -31,12 +31,21 @@ class RegisterPage extends React.Component {
         const {name, value} = event.target;
         const {user} = this.state;
 
-        this.setState({
-            user: {
-                ...user,
-                [name]: value
-            }
-        });
+        if (name === "Username") {
+            this.setState({
+                user: {
+                    ...user,
+                    [name]: value.trim()
+                }
+            });
+        } else {
+            this.setState({
+                user: {
+                    ...user,
+                    [name]: value
+                }
+            });
+        }
     }
 
     registerHandleSubmit(event) {
