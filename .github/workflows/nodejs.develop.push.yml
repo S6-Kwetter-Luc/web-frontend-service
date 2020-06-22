@@ -152,11 +152,9 @@ jobs:
 
       - name: Run Lighthouse check
         uses: foo-software/lighthouse-check-action@master
-        env:
-          WEBSITE_URL: https://kwetter.staging.lucurlings.nl
         with:
           outputDirectory: /tmp/lighthouse-report
-          urls: ${{ env.WEBSITE_URL }}
+          urls: 'https://kwetter.staging.lucurlings.nl'
 
       - name: Upload Lighthouse report artifact
         uses: actions/upload-artifact@master
@@ -164,8 +162,17 @@ jobs:
           name: lighthouse-report-artifact
           path: /tmp/lighthouse-report
 
+  zap-baseline-check:
+    needs: deployment
+    runs-on: ubuntu-18.04
+    steps:
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.3.0
+        with:
+          target: 'https://kwetter.staging.lucurlings.nl'
+
   k6_cloud_test:
-    needs: lighthouse-check
+    needs: [lighthouse-check, zap-baseline-check]
     name: k6 cloud test run
     runs-on: ubuntu-18.04
     steps:

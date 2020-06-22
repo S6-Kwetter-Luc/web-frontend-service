@@ -21,15 +21,9 @@ class HomePage extends React.Component {
                             <h1 style={{textAlign: "center"}}>Welcome to Kwetter, a twitter clone made by <a
                                 href="https://lucurlings.nl" target="_blank" rel="noopener noreferrer">Luc Urlings</a>.</h1>
                             <h3 style={{textAlign: "center"}}>Get started by <Link to={{
-                                pathname: "/auth",
-                                state: {
-                                    isRegistering: false
-                                }
+                                pathname: "/login",
                             }}>logging in</Link> or <Link to={{
-                                pathname: "/auth",
-                                state: {
-                                    isRegistering: true
-                                }
+                                pathname: "/register",
                             }}>signing up</Link>!</h3>
                         </div>
                     </div>
