@@ -161,6 +161,7 @@ jobs:
     steps:
       - name: ZAP Scan
         uses: zaproxy/action-baseline@v0.3.0
+        continue-on-error: true
         with:
           target: 'https://kwetter.lucurlings.nl'
 
