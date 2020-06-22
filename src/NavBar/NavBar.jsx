@@ -4,13 +4,14 @@ import {Link} from 'react-router-dom';
 import './NavBar.css'
 import config from "../config.json";
 import { authHeader, authHeaderAndAdditionalHeaders } from '../_helpers';
+import {alertActions} from "../_actions";
 
 class NavBar extends Component {
 
     constructor(props) {
         super(props);
 
-        this.state = {kweet:""}
+        this.state = {kweet:"", error: <></>}
     }
 
     onKweetContentChange = (event) => {
@@ -31,9 +32,15 @@ class NavBar extends Component {
             headers: authHeaderAndAdditionalHeaders()
         }
 
-        let response = await fetch(`${config.KWET_SERVICE}/kweet`, requestOptions)
+        let response = await fetch(`${config.KWET_SERVICE}/Kweet`, requestOptions)
+        let text = await response.text()
+        console.log(text)
         if (response.status !== 200) {
-            throw new Error(JSON.stringify(response))
+            this.setState((state, props) => {
+                return {
+                    error: <><p>Error: {text}</p></>
+                }
+            })
         }
 
         // let body = await response.json();
@@ -46,7 +53,7 @@ class NavBar extends Component {
     render() {
         const {authentication} = this.props;
 
-        return (
+        return (<>
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary" style={{marginBottom: 50}}>
                 <div className="container">
                     <Link className="navbar-brand" to="/">Kwetter</Link>
@@ -54,6 +61,7 @@ class NavBar extends Component {
                             aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
+
 
                     <div className="collapse navbar-collapse" id="navbarColor01">
                         {
@@ -118,9 +126,6 @@ class NavBar extends Component {
                                         </div>
                                     </div>
                                 {/*End Modal*/}
-                                {/*Toast*/}
-
-                                {/*End Toast*/}
                                 </>
                                 : <>
                                     <ul className="navbar-nav mr-auto">
@@ -144,6 +149,8 @@ class NavBar extends Component {
                     </div>
                 </div>
             </nav>
+                {this.state.error}
+            </>
         )
     }
 }

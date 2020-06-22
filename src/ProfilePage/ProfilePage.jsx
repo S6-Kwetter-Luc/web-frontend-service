@@ -141,7 +141,7 @@ class ProfilePage extends React.Component {
             method: 'POST',
             // mode: "cors",
             // cache: "default"
-            // headers: authHeader()
+            headers: authHeader()
         }
 
         await fetch(`${config.ACCOUNT_SERVICE}/profile/follow?id=${authentication.user.id}&idToFollow=${this.props.match.params.id}`, requestOptions)
@@ -160,7 +160,7 @@ class ProfilePage extends React.Component {
             method: 'POST',
             // mode: "cors",
             // cache: "default"
-            // headers: authHeader()
+            headers: authHeader()
         }
 
         await fetch(`${config.ACCOUNT_SERVICE}/profile/unfollow?id=${authentication.user.id}&idToFollow=${this.props.match.params.id}`, requestOptions)
