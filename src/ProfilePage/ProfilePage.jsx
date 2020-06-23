@@ -102,15 +102,36 @@ class ProfilePage extends React.Component {
             throw new Error(JSON.stringify(response))
         }
         let body = await response.json()
+
+        let user = JSON.parse(localStorage.getItem("user"));
+
         let html = body.map((item, key) => {
+
+            let likeByMe = false;
+
+            for (let i = 0; i < item.likes.length; i++) {
+                if (item.likes[i].id === user.id) likeByMe = true;
+            }
+
             return <>
                 <div className="card" key={item.id} style={{marginTop: '20px'}}>
                     <div className="card-body">
                         <p className="card-text">{item.content}</p>
                         <p className="card-text"><small className="text-muted">Written
                             on {new Date(item.dateTime).toLocaleString()} by {item.writer.username}</small></p>
-                        <button type="button" className="btn btn-success"><i className="fa fa-thumbs-up"></i> Like</button>
-                        <button type="button" className="btn btn-danger"> <i className="fa fa-thumbs-down"></i> Unlike</button>
+                        {
+                            likeByMe
+                                ? <button type="button" className="btn btn-success" onClick={() => {
+                                    this.unlikeKweet(item.id)
+                                }}>{item.likes.length} <i
+                                    className="fa fa-thumbs-down"></i> Unlike
+                                </button>
+                                : <button type="button" className="btn btn-primary" onClick={() => {
+                                    this.likeKweet(item.id)
+                                }}>{item.likes.length} <i
+                                    className="fa fa-thumbs-up"></i> Like
+                                </button>
+                        }
                     </div>
                 </div>
             </>
@@ -240,6 +261,65 @@ class ProfilePage extends React.Component {
         });
     }
 
+    likeKweet = async (kweetId) => {
+        let user = JSON.parse(localStorage.getItem("user"));
+
+        const requestOptions = {
+            method: 'POST',
+            // mode: "cors",
+            // cache: "default"
+            body: JSON.stringify({
+                "Username": user.profile.username,
+                "UserId": user.id
+            }),
+            headers: authHeaderAndAdditionalHeaders()
+        }
+
+        let response = await fetch(`${config.KWET_SERVICE}/kweet/like/${kweetId}`, requestOptions)
+        if (response.status != 200) {
+            this.setState((state, props) => {
+                return {
+                    error: <>
+                        <div className="alert alert-danger" role="alert">
+                            Something went wrong during the loading of the kweets
+                        </div>
+                    </>
+                }
+            })
+        }
+
+        this.loadRecentKwets()
+    }
+
+    unlikeKweet = async (kweetId) => {
+        let user = JSON.parse(localStorage.getItem("user"));
+
+        const requestOptions = {
+            method: 'POST',
+            // mode: "cors",
+            // cache: "default"
+            body: JSON.stringify({
+                "Username": user.profile.username,
+                "UserId": user.id
+            }),
+            headers: authHeaderAndAdditionalHeaders()
+        }
+
+        let response = await fetch(`${config.KWET_SERVICE}/Kweet/unlike/${kweetId}`, requestOptions)
+        if (response.status != 200) {
+            this.setState((state, props) => {
+                return {
+                    error: <>
+                        <div className="alert alert-danger" role="alert">
+                            Something went wrong during the loading of the kweets
+                        </div>
+                    </>
+                }
+            })
+        }
+
+        this.loadRecentKwets()
+    }
 
     render() {
         return (
