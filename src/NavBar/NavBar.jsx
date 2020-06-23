@@ -69,10 +69,10 @@ class NavBar extends Component {
                                 ? <>
                                     <ul className="navbar-nav mr-auto">
                                         <li className="nav-item">
-                                            <a className="nav-link" href="#">Feed</a>
+                                            <Link className="nav-link" to="/explore">Explore</Link>
                                         </li>
                                         <li className="nav-item">
-                                            <a className="nav-link" href="#">Settings</a>
+                                            <a className="nav-link" href="#">Your feed</a>
                                         </li>
                                     </ul>
                                     <ul className="nav navbar-nav navbar-right">

@@ -109,6 +109,8 @@ class ProfilePage extends React.Component {
                         <p className="card-text">{item.content}</p>
                         <p className="card-text"><small className="text-muted">Written
                             on {new Date(item.dateTime).toLocaleString()} by {item.writer.username}</small></p>
+                        <button type="button" className="btn btn-success"><i className="fa fa-thumbs-up"></i> Like</button>
+                        <button type="button" className="btn btn-danger"> <i className="fa fa-thumbs-down"></i> Unlike</button>
                     </div>
                 </div>
             </>
@@ -229,10 +231,6 @@ class ProfilePage extends React.Component {
         localStorage.setItem("user", JSON.stringify(json))
 
         this.loadRecentKwets()
-    }
-
-    changeUsername = async () => {
-
     }
 
     handleUsernameChange(event) {
