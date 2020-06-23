@@ -78,7 +78,7 @@ class RegisterPage extends React.Component {
                     }
                 </div>
                 <div className={'form-group' + (submitted && !user.Username ? ' has-error' : '')}>
-                    <label htmlFor="Password">Username</label>
+                    <label htmlFor="Username">Username</label>
                     <input type="text" className="form-control" name="Username" value={user.Username}
                            onChange={this.registerHandleChange}/>
                     {submitted && !user.Username &&

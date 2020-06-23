@@ -2,7 +2,7 @@ import React from 'react';
 import config from '../config.json'
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
-import { authHeader } from '../_helpers';
+import {authHeader, authHeaderAndAdditionalHeaders} from '../_helpers';
 
 
 class ProfilePage extends React.Component {
@@ -59,7 +59,18 @@ class ProfilePage extends React.Component {
 
         console.log("I DID CONSTRUCT")
 
-        this.state = {user: null, myProfile: false, follow: false, followers: [], following: [], kweets: []}
+        this.state = {
+            user: null,
+            myProfile: false,
+            follow: false,
+            followers: [],
+            following: [],
+            kweets: [],
+            isEditing: false,
+            tempUsername: ""
+        }
+
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
     }
 
     //Parses lost of following or followers
@@ -96,7 +107,8 @@ class ProfilePage extends React.Component {
                 <div className="card" key={item.id} style={{marginTop: '20px'}}>
                     <div className="card-body">
                         <p className="card-text">{item.content}</p>
-                        <p className="card-text"><small className="text-muted">Written on {new Date(item.dateTime).toLocaleString()}</small></p>
+                        <p className="card-text"><small className="text-muted">Written
+                            on {new Date(item.dateTime).toLocaleString()} by {item.writer.username}</small></p>
                     </div>
                 </div>
             </>
@@ -172,8 +184,66 @@ class ProfilePage extends React.Component {
         this.loadFollowers()
     }
 
-    render() {
+    enableEditMode = () => {
+        this.setState((state, props) => {
+            return {isEditing: true, tempUsername: this.state.user.profile.username};
+        });
+    }
 
+    disableEditMode = async () => {
+        this.setState((state, props) => {
+            return {isEditing: false};
+        });
+
+        if (this.state.tempUsername.length === 0) return
+        if (this.state.tempUsername === this.state.user.profile.username) return;
+
+        //send to server
+        const requestOptions = {
+            method: 'PUT',
+            // mode: "cors",
+            // cache: "default"
+            body: JSON.stringify({Username: this.state.tempUsername}),
+            headers: authHeaderAndAdditionalHeaders()
+        }
+        await fetch(`${config.ACCOUNT_SERVICE}/account/${this.state.user.id}`, requestOptions)
+
+
+        const {user} = this.state;
+        const {profile} = user;
+        console.log(user)
+        this.setState((state, props) => {
+            return {
+                user: {
+                    ...user,
+                    profile: {
+                        ...profile,
+                        username: this.state.tempUsername
+                    }
+                }
+            };
+        });
+
+        let json = JSON.parse(localStorage.getItem("user"));
+        json.profile.username = this.state.tempUsername
+        localStorage.setItem("user", JSON.stringify(json))
+
+        this.loadRecentKwets()
+    }
+
+    changeUsername = async () => {
+
+    }
+
+    handleUsernameChange(event) {
+        const {name, value} = event.target;
+        this.setState((state, props) => {
+            return {[name]: value.trim()};
+        });
+    }
+
+
+    render() {
         return (
             <div>
                 {
@@ -185,7 +255,13 @@ class ProfilePage extends React.Component {
                             {
                                 this.state.myProfile
                                     ? <div className="float-right" style={{margin: '10px'}}>
-                                        <button type="button" className="btn btn-primary">Edit your profile</button>
+                                        {
+                                            !this.state.isEditing
+                                                ? <button type="button" className="btn btn-primary"
+                                                          onClick={this.enableEditMode}>Edit your profile</button>
+                                                : <button type="button" className="btn btn-primary"
+                                                          onClick={this.disableEditMode}>Save the changes</button>
+                                        }
                                     </div>
                                     : <>
                                         {
@@ -207,7 +283,22 @@ class ProfilePage extends React.Component {
                                 <div className="jumbotron">
                                     <h2 className="display-4"><span
                                         className="text-muted">Welcome </span> {this.state.user.name}!</h2>
-                                    <p><span className="text-muted">Username </span>@{this.state.user.profile.username}</p>
+                                    <p>
+                                        {
+                                            this.state.isEditing
+                                                ? <><span
+                                                    className="text-muted">Username @<input type="text"
+                                                                                            style={{maxWidth: '400px'}}
+                                                                                            name="tempUsername"
+                                                                                            value={this.state.tempUsername}
+                                                                                            onChange={this.handleUsernameChange}/></span></>
+
+                                                : <><span
+                                                    className="text-muted">Username </span>@{this.state.user.profile.username}</>
+                                        }
+
+
+                                    </p>
                                     <p><span className="text-muted">Email </span>{this.state.user.email}</p>
                                 </div>
 
