@@ -10,6 +10,7 @@ import {HomePage} from '../HomePage';
 import {LoginPage} from '../LoginPage';
 import {RegisterPage} from '../RegisterPage';
 import {ProfilePage} from '../ProfilePage'
+import {GeneralFeedPage} from '../GeneralFeedPage'
 import {ReleaseNotes} from "../ReleaseNotes/ReleaseNotes";
 
 import '../globalStylesheet.css'
@@ -41,6 +42,7 @@ class App extends React.Component {
                         <Switch>
                             <PrivateRoute exact path="/profile/:id" component={ProfilePage}/>
                             <Route path="/login" component={LoginPage}/>
+                            <Route path="/Explore" component={GeneralFeedPage}/>
                             <Route path="/register" component={RegisterPage}/>
                             <Route path="/release-notes" exact component={ReleaseNotes}/>
                             <Route path="/" exact component={HomePage}/>
