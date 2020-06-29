@@ -4,13 +4,14 @@ import {Link} from 'react-router-dom';
 import './NavBar.css'
 import config from "../config.json";
 import { authHeader, authHeaderAndAdditionalHeaders } from '../_helpers';
+import {alertActions} from "../_actions";
 
 class NavBar extends Component {
 
     constructor(props) {
         super(props);
 
-        this.state = {kweet:""}
+        this.state = {kweet:"", error: <></>}
     }
 
     onKweetContentChange = (event) => {
@@ -31,9 +32,15 @@ class NavBar extends Component {
             headers: authHeaderAndAdditionalHeaders()
         }
 
-        let response = await fetch(`${config.KWET_SERVICE}/kweet`, requestOptions)
+        let response = await fetch(`${config.KWET_SERVICE}/Kweet`, requestOptions)
+        let text = await response.text()
+        console.log(text)
         if (response.status !== 200) {
-            throw new Error(JSON.stringify(response))
+            this.setState((state, props) => {
+                return {
+                    error: <><p>Error: {text}</p></>
+                }
+            })
         }
 
         // let body = await response.json();
@@ -46,7 +53,7 @@ class NavBar extends Component {
     render() {
         const {authentication} = this.props;
 
-        return (
+        return (<>
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary" style={{marginBottom: 50}}>
                 <div className="container">
                     <Link className="navbar-brand" to="/">Kwetter</Link>
@@ -55,19 +62,23 @@ class NavBar extends Component {
                         <span className="navbar-toggler-icon"></span>
                     </button>
 
+
                     <div className="collapse navbar-collapse" id="navbarColor01">
                         {
                             authentication.loggedIn
                                 ? <>
                                     <ul className="navbar-nav mr-auto">
                                         <li className="nav-item">
-                                            <a className="nav-link" href="#">Feed</a>
+                                            <Link className="nav-link" to="/explore">Explore</Link>
                                         </li>
                                         <li className="nav-item">
-                                            <a className="nav-link" href="#">Settings</a>
+                                            <a className="nav-link" href="#">Your feed</a>
                                         </li>
                                     </ul>
                                     <ul className="nav navbar-nav navbar-right">
+                                        <li className="nav-item" style={{marginRight: "20px"}}>
+                                            <Link className="btn btn-outline-light my-2 my-sm-0" to="/release-notes">Release Notes</Link>
+                                        </li>
                                         <li className="nav-item" style={{marginRight: "20px"}}>
                                             <button type="button" className="btn btn-outline-success my-2 my-sm-0" data-toggle="modal"
                                                     data-target="#exampleModal">Write a kweet
@@ -115,15 +126,15 @@ class NavBar extends Component {
                                         </div>
                                     </div>
                                 {/*End Modal*/}
-                                {/*Toast*/}
-
-                                {/*End Toast*/}
                                 </>
                                 : <>
                                     <ul className="navbar-nav mr-auto">
 
                                     </ul>
                                     <ul className="nav navbar-nav navbar-right">
+                                        <li className="nav-item" style={{marginRight: "20px"}}>
+                                            <Link className="btn btn-outline-light my-2 my-sm-0" to="/release-notes">Release Notes</Link>
+                                        </li>
                                         <li style={{marginRight: "20px"}}>
                                             <Link className="btn btn-outline-light my-2 my-sm-0"
                                                   to="/login">Login</Link>
@@ -138,6 +149,8 @@ class NavBar extends Component {
                     </div>
                 </div>
             </nav>
+                {this.state.error}
+            </>
         )
     }
 }
